@@ -9,7 +9,7 @@ class LinkedStack{
     LinkedStack():top(NULL){};
     ~LinkedStack(){makeEmpty();}
     void Push(const T &x);
-    bool Pop(T &x)const;
+    bool Pop(T &x);
     bool getTop(T &x)const;
     bool IsEmpty()const{return (top==NULL)?true:false;}
     int getSize()const;
@@ -38,7 +38,7 @@ void LinkedStack<T>::Push(const T&x){
 // 删除栈顶元素，并将栈顶元素用x作为输出
 // 需要指针后移和删除该结点
 template<class T>
-bool LinkedStack<T>::Pop(T &x)const{
+bool LinkedStack<T>::Pop(T &x){
     if(IsEmpty())return false;
     LinkNode<T> *p=top;
     top=top ->link;

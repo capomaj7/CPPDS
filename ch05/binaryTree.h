@@ -14,65 +14,36 @@ template<class T>
 class BinaryTree{
     protected:
     BinTreeNode<T>*root;
-    // 输入停止标志
     T RefValue;
-    // z指针的引用，可以修改指针所指向的值
-    void CreateBinTree(istream &in,BinTreeNode<T> *&subTree);
-    /* 暂时没使用 */
-    //bool Insert(BinTreeNode<T> *&subTree,const T &x);
     void Destroy(BinTreeNode<T> *&subTree);
-    // bool Find(BinTreeNode<T> *subTree,const T &x)const;
-    BinTreeNode<T> *Copy(BinTreeNode<T> *originnode);
+    public:
+    BinaryTree():root(NULL){}
+    BinaryTree(T value):RefValue(value),root(NULL){}
+    BinaryTree(BinaryTree<T>&s);
+    ~BinaryTree(){Destroy(root);}
+    BinTreeNode<T>* CreateBinTree(BinTreeNode<T>* &subTree);
+    bool IsEmpty(){return (root==NULL)?true:false;}
+    BinTreeNode<T>* Parent(BinTreeNode<T>*subTree,BinTreeNode<T>*current);
+    BinTreeNode<T>*LeftChild(BinTreeNode<T>*current){
+        return (current!=NULL)?current ->leftChild:NULL;}
+    BinTreeNode<T>*RightChild(BinTreeNode<T>*current){
+        return (current!=NULL)?current ->rightChild:NULL;}
     int Height(BinTreeNode<T> *subTree)const;
-    //返回结点个数
     int Size(BinTreeNode<T> *subTree)const;
-    BinTreeNode<T>*Parent(BinTreeNode<T> *subTree,BinTreeNode<T> *current);
-    /* 暂时没使用 */
-    // BinTreeNode<T>*Find(BinTreeNode<T> *subTree,const T &x)const;
-    void Traverse(BinTreeNode<T>*subTree,ostream&out);
-    // 第二个参数是指向函数的指针，
-    // https://zhidao.baidu.com/question/349140172.html
-    void preOrder(BinTreeNode<T>*subTree,void(*visit)(BinTreeNode<T>*p));
-    void inOrder(BinTreeNode<T>*subTree,void(*visit)(BinTreeNode<T>*p));
-    void postOrder(BinTreeNode<T>*subTree,void(*visit)(BinTreeNode<T>*p));
+    BinTreeNode<T>* getRoot(){return root;}
+    void setRoot(BinTreeNode<T> *subTree){ root=subTree;}
+    void Traverse(BinTreeNode<T> *subTree);
+    void preOrder(BinTreeNode<T> *subTree);
+    void inOrder(BinTreeNode<T> *subTree);
+    void postOrder(BinTreeNode<T> *subTree);
+    void levelOrder();
+    BinTreeNode<T>*Copy(BinTreeNode<T>*orignode);
+    bool operator==(BinaryTree<T>& t);
     template<class U>
     friend istream&operator>>(istream&in,BinTreeNode<U>&Tree);
     template<class U>
     friend ostream&operator<<(ostream&os,BinTreeNode<U>&Tree);
-    // template<class T>
-    // friend int operator ==(const BinaryTree<T>&s,const BinaryTree<T> &t)
-    // template<class T>
-    public:
-    BinaryTree():root(NULL){}
-    BinaryTree(T value):RefValue(value),root(NULL){}
-    // 复制构造函数
-    BinaryTree(BinaryTree<T>&s);
-    ~BinaryTree(){Destroy(root);}
-    bool IsEmpty(){return (root==NULL)?true:false;}
-    BinTreeNode<T>* Parent(BinTreeNode<T> *current){
-        return(root==NULL||root==current)?NULL:Parent(root,current);
-    }
-    BinTreeNode<T>*LeftChild(BinTreeNode<T>*current){
-        return (current!=NULL)?current ->leftChild:NULL;
-    }
-    BinTreeNode<T>*RightChild(BinTreeNode<T>*current){
-        return (current!=NULL)?current ->rightChild:NULL;
-    }
-    int Height()const{return Height(root);}
-    int Size()const{return Size(root);}
-    BinTreeNode<T>*getRoot()const{return root;}
-    void preOrder(void (*visit)(BinTreeNode<T> *p))
-    { preOrder(root,visit);}
-    void inOrder(void (*visit)(BinTreeNode<T> *p)){
-         inOrder(root,visit);
-    }
-    void postOrder(void (*visit)(BinTreeNode<T> *p))
-    {
-        postOrder(root,visit);
-    }
-    void levelOrder(void (*visit)(BinTreeNode<T> *p));
-    // int Insert(const T&item);
-    // BinTreeNode<T>*Find(T &item)const;
+    
 };
 
 // 注意你的原型要和定义的一样
@@ -85,7 +56,30 @@ void BinaryTree<T>::Destroy(BinTreeNode<T> *&subtree){
         delete subtree;
     }
 }
-
+template <class T>
+BinTreeNode<T>* BinaryTree<T>::CreateBinTree(BinTreeNode<T>* &subTree)
+{
+    T item;
+    // subTree=root;
+    cin >> item;
+    if (item != RefValue)
+    {
+        subTree = new BinTreeNode<T>(item);
+        if (subTree == NULL)
+        {
+            cerr << "error" << endl;
+            exit(1);
+        }
+        CreateBinTree(subTree ->leftChild);
+        CreateBinTree(subTree ->rightChild);
+    }
+    else
+    {
+        subTree = NULL;
+    }
+    return subTree;
+}
+// 返回父结点 
 template<class T>
 BinTreeNode<T> * BinaryTree<T>::Parent(BinTreeNode<T>*subTree,BinTreeNode<T>*current){
     if(subTree==NULL)return NULL;
@@ -99,103 +93,107 @@ BinTreeNode<T> * BinaryTree<T>::Parent(BinTreeNode<T>*subTree,BinTreeNode<T>*cur
 
 // 先序遍历输出
 template<class T>
-void BinaryTree<T>::Traverse(BinTreeNode<T> *subTree,ostream &out){
+void BinaryTree<T>::Traverse(BinTreeNode<T> *subTree){
     if(subTree!=NULL){
-        out<<subTree ->data<<' ';
-        Traverse(subTree ->leftChild,out);
-        Traverse(subTree ->rightChild,out);
+        cout<<subTree ->data<<'\t';
+        Traverse(subTree ->leftChild);
+        Traverse(subTree ->rightChild);
     }   
 }
 
+
 // 建立一个二叉树,重载输入运算符
 template<class T>
-istream &operator>>(istream &in,BinaryTree<T>&Tree){
-    CreateBinTree(in,Tree.root);
+istream &operator>>(istream &in,BinaryTree<T>&tree){
+    // CreateBinTree(in,Tree.getRoot());
+    BinTreeNode<T> *p;
+    tree.CreateBinTree(p);
+    tree.setRoot(p);
     return in;
 }
 
 template<class T>
-ostream &operator<<(ostream &out,BinaryTree<T> &Tree){
+ostream &operator<<(ostream &out,BinaryTree<T> &tree){
     out<<"preOrder is:\n";
-    Tree.Traverse(Tree.root,out);
+    tree.Traverse(tree.getRoot());
     out<<endl;
     return out;
 }
 
 // 输入广义表的形式建立二叉树的算法,见树p197
-// template<class T>
-// void BinaryTree<T>::CreateBinTree(istream &in,BinTreeNode<T>*&Tree){
-//     LinkedStack<BinTreeNode<T> *> s;
-//     Tree=NULL;
-//     BinTreeNode<T>*p,*t;int k;
-//     T ch;
-//     in >>ch;
-//     while(ch!=RefValue)
-//     {
-//         switch(ch){
-//             case'(':s.Push(p);k=1;break;
-//             case')':s.Pop(t);break;
-//             case',':k=2;break;
-//             default:
-//             p=new BinTreeNode<T>(ch);
-//             if(Tree==NULL)Tree=p;
-//             else if(k==1){
-//                 s.getTop(t);
-//                 t ->leftChild=p;
-//             }
-//             else{
-//                 s.getTop(t);
-//                 t ->rightChild=p;
-//             }
-//         }
-//         in>>ch;
-//     }
-// }
+template<class T>
+void CreateBinTreeWithTable(BinTreeNode<T>*&Tree,T RefValue){
+    LinkedStack<BinTreeNode<T> *> s;
+    Tree=NULL;
+    BinTreeNode<T>*p,*t;int k;
+    T ch;
+    cin >>ch;
+    while(ch!=RefValue)
+    {
+        switch(ch){
+            case'(':s.Push(p);k=1;break;
+            case')':s.Pop(t);break;
+            case',':k=2;break;
+            default:
+            p=new BinTreeNode<T>(ch);
+            if(Tree==NULL)Tree=p;
+            else if(k==1){
+                s.getTop(t);
+                t ->leftChild=p;
+            }
+            else{
+                s.getTop(t);
+                t ->rightChild=p;
+            }
+        }
+        cin>>ch;
+    }
+}
 
 // 递归遍历前中后序的树
 template<class T>
-void BinaryTree<T>::inOrder(BinTreeNode<T>*subTree,void(*visit)(BinTreeNode<T>*p))
+void BinaryTree<T>::inOrder(BinTreeNode<T>*subTree)
 {
     if(subTree!=NULL)
     {
-        inOrder(subTree ->leftChild,visit);
-        visit(subTree);
-        inOrder(subTree ->rightChild,visit);
+        inOrder(subTree ->leftChild);
+        cout<<subTree ->data<<"\t";
+        inOrder(subTree ->rightChild);
     }
 }
 
 template<class T>
-void BinaryTree<T>::preOrder(BinTreeNode<T>*subTree,void (*visit)(BinTreeNode<T>*p)){
+void BinaryTree<T>::preOrder(BinTreeNode<T>*subTree){
     if(subTree!=NULL){
-        visit(subTree);
-        preOrder(subTree ->leftChild,visit);
-        preOrder(subTree ->rightChild,visit);
+        cout<<subTree ->data<<" ";
+        preOrder(subTree ->leftChild);
+        preOrder(subTree ->rightChild);
     }
 }
 
 template<class T>
-void BinaryTree<T>::postOrder(BinTreeNode<T> *subTree,void(*visit)(BinTreeNode<T>*p))
+void BinaryTree<T>::postOrder(BinTreeNode<T> *subTree)
 {
     if(subTree!=NULL){
-        postOrder(subTree ->leftChild,visit);
-        postOrder(subTree ->rightChild,visit);
-        visit(subTree);
+        postOrder(subTree ->leftChild);
+        postOrder(subTree ->rightChild);
+        cout<<subTree ->data<<"\t";
     }
 }
 
 template<class T>
-void BinaryTree<T>::levelOrder(void (*visit)(BinTreeNode<T>*p)){
+void BinaryTree<T>::levelOrder(){
     LinkedQueue<BinTreeNode<T>*>Q;
     BinTreeNode<T>*p=root;
     Q.EnQueue(p);
     while(!Q.IsEmpty()){
         Q.DeQueue(p);
-        visit(p);
+        cout<<p->data<<"\t";
         if(p ->leftChild) Q.EnQueue(p ->leftChild);
         if(p ->rightChild)Q.EnQueue(p ->rightChild);
     }
 }
-
+// 返回的结点数
 template<class T>
 int BinaryTree<T>::Size(BinTreeNode<T> *subTree)const{
     if(subTree==NULL)return 0;
@@ -216,6 +214,7 @@ int BinaryTree<T>::Height(BinTreeNode<T> *subTree)const{
 template<class T>
 BinaryTree<T>::BinaryTree(BinaryTree<T>&s){
     root=Copy(s.root);
+    RefValue=s.RefValue;
 }
 
 // 递归拷贝二叉树的副本
@@ -228,12 +227,6 @@ BinTreeNode<T> *BinaryTree<T>::Copy(BinTreeNode<T>*orignode){
     temp ->rightChild=Copy(orignode ->rightChild);
     return temp;
 }
-
-template<class T>
-int operator==(const BinaryTree<T>&s,const BinaryTree<T>&t){
-    return equal(s.root,t.root)?true:false;
-}
-
 template<class T>
 bool equal(BinTreeNode<T>*a,BinTreeNode<T>*b){
     if(a==NULL&&b==NULL)return true;
@@ -244,45 +237,28 @@ bool equal(BinTreeNode<T>*a,BinTreeNode<T>*b){
     return false;
 }
 
-//
-template <class T>
-void BinaryTree<T>::CreateBinTree(istream &in, BinTreeNode<T> *&subTree)
-{
-    T item;
-    if (!in.eof())
-    {
-        in >> item;
-        if (item != RefValue)
-        {
-            subTree = new BinTreeNode<T>(item);
-            if (subTree == NULL)
-            {
-                cerr << "error" << endl;
-                exit(1);
-            }
-            CreateBinTree(in, subTree->leftChild);
-            CreateBinTree(in, subTree->rightChild);
-        }
-        else
-        {
-            subTree = NULL;
-        }
-    }
+// 注意这里==重载可以不用友元函数，不需要2个
+template<class T>
+bool BinaryTree<T>::operator==(BinaryTree<T>&s){
+    return equal(this->root,s.getRoot())?true:false;
 }
+
+
+
 
 // 以广义表的形式输出二叉树
 template<class T>
-void PrintBTree(BinTreeNode<T> *tree){
-    if( tree!=NULL)
+void PrintBTreeWithTable(BinTreeNode<T> *tree){
+    if(tree!=NULL)
     {
-        cout<< tree ->data;
+        cout<<tree ->data;
         if(tree ->leftChild!=NULL||tree ->rightChild!=NULL)
         {
             cout<<"(";
-            PrintBTree(tree ->leftChild);
+            PrintBTreeWithTable(tree ->leftChild);
             cout<<",";
             // if(tree ->rightChild)
-            PrintBTree(tree ->rightChild);
+            PrintBTreeWithTable(tree ->rightChild);
             cout<<")";
         }
     }
@@ -291,29 +267,30 @@ void PrintBTree(BinTreeNode<T> *tree){
 // 这个是退栈的时候访问，放出来审问类型
 //元素进去后，放出来后审问问你要右结点，有放进栈，再问你左结点，有放进去,直到穷尽
 template<class T>
-void preOrder2(BinTreeNode<T>*tree,void(*visit)(BinTreeNode<T>*p))
+void preOrder2(BinTreeNode<T>*tree)
 {
     LinkedStack<BinTreeNode<T>*>s;
     BinTreeNode<T>*p=tree;
-    s.Push(tree);
+    s.Push(p);
     while(!s.IsEmpty()){
         s.Pop(p);
-        visit(p);
+        cout<<p ->data<<"\t";
         // 注意这里一定要先进右边，注意这边是先进2个出一个的套路
         if(p ->rightChild!=NULL)s.Push(p ->rightChild);
         if(p ->leftChild!=NULL)s.Push(p ->leftChild);
     }
 }
+
 // 这个是进栈的时候访问，进去之前访问类型
 // 先访问（输出）,然后询问有不有右结点，有放进去，
 // 继续询问有不有左结点，根据提供线索去查找左结点,有的话访问,没有将栈中放出去的元素看看有不有左右结点
 template<class T>
-void preOrder3(BinTreeNode<T>*tree,void(*visit)(BinTreeNode<T>*p)){
+void preOrder3(BinTreeNode<T>*tree){
     LinkedStack<BinTreeNode<T>*>s;
     BinTreeNode<T>*p=tree;
     s.Push(NULL);
     while(p){
-        visit(p);
+       cout<<p ->data<<"\t";
         if(p ->rightChild)s.Push(p ->rightChild);
         // 没有左子树就要输出
         if(p ->leftChild)p=p ->leftChild;
@@ -339,7 +316,7 @@ void inOrder2(BinTreeNode<T> *tree,void(*visit)(BinTreeNode<T>*p)){
         }
         if(!s.IsEmpty()){
             s.Pop(p);
-            visit(p);
+            cout<<p ->data<<"\t";
             // 遍历指针进入到右边子女结点
             p =p ->rightChild;
         }
@@ -354,7 +331,6 @@ struct stkNode{
     char tag;
     stkNode(BinTreeNode<T>*N=NULL):ptr(N),tag('L'){};
 };
-
 template<class T>
 void postOrder2(BinTreeNode<T>*tree,void(*visit)(BinTreeNode<T>*p)){
     LinkedStack< stkNode<T> >s;
