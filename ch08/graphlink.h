@@ -1,5 +1,7 @@
 #include<iostream>
 #include<stdlib.h>
+#ifndef _GRAPHLINK_H_
+#define _GRAPHLINK_H_
 using namespace std;
 const int DefaultVertices=30;
 const int maxWeight=1024;
@@ -50,7 +52,7 @@ class Graphlink{
     Graphlink(int sz =DefaultVertices);
     ~Graphlink();
     T getValue(int i){return (i>=0&&i<numVertices)?NodeTable[i].data:0;}
-    E getWeigh(int v1,int v2);
+    E getWeight(int v1,int v2);
     int getFirstNeighbor(int v);
     int getNextNeighor(int v,int w);
     bool insertVertex(const T &v);
@@ -111,7 +113,7 @@ int Graphlink<T,E>::getNextNeighor(int v,int w)
 }
 
 template<class T,class E>
-E Graphlink<T,E>::getWeigh(int v1,int v2)
+E Graphlink<T,E>::getWeight(int v1,int v2)
 {
     if(v1!=-1&&v2!=-1)
     {
@@ -143,6 +145,7 @@ bool Graphlink<T,E>::removeVertex(int v){
     // t是他管理结点上的结点的前驱
     Edge <T,E> *p,*s,*t;
     int i,k;
+    // cout<<"nihao"<<endl;
     while(NodeTable[v].adj)
     {
         p=NodeTable[v].adj;
@@ -173,34 +176,131 @@ bool Graphlink<T,E>::removeVertex(int v){
     numVertices--;
     // 用最后一个来填补新的一个,注意这里已经在上面做过--自减操作了
     NodeTable[v].data =NodeTable[numVertices].data;
-    p=NodeTable[v].adj=NodeTable[numVertices].adj;
+    NodeTable[v].adj=NodeTable[numVertices].adj;
+    p=NodeTable[v].adj;
+    cout<<p ->cost<<endl;
     while(p){
         s=NodeTable[p ->dest].adj;
         // 因为这里没删除的操作，所以没有使用前驱指针
         while(s){
-            if(s ->dest==numVertices){s ->dest=v;break;}
-            else s ->link;
+            if(s ->dest==(numVertices)){s ->dest=v;break;}
+            else s=s ->link;
         }
-
+        p =p ->link;
     }
+    cout<<"nihao3"<<endl;
     return true;
 }
 
+// 这里是无向图的插入
 template<class T,class E>
 bool Graphlink<T,E>::insertEdge(int v1, int v2,E weight){
-    if(v1>=0&&v<numVertices&&v2>=0&&v2<numVertices)
+    if(v1>=0&&v1<numVertices&&v2>=0&&v2<numVertices)
     {
         Edge <T,E> *q,*p= NodeTable[v1].adj;
         while(p&&p ->dest!=v2)
             p =p ->link;
+        // 因为要插入，看看是不是已存在这个边，如果存在，就不插入了
         if(p)return false;
         p=new Edge <T,E>;
         q =new Edge <T,E>;
+        p ->dest=v2;
+        p ->cost=weight;
+        p ->link=NodeTable[v1].adj;
+        NodeTable[v1].adj=p;
+        q ->dest=v1;
+        q ->cost=weight;
+        q ->link=NodeTable[v2].adj;
+        NodeTable[v2].adj=p;
+        numEdges++;
+        return true;
         
+    }
+    return false;
+}
+
+// 删除边的思路是类似链表删除结点，这里要用它的前驱
+template<class T,class E>
+bool Graphlink<T,E>::removeEdge(int v1,int v2){
+    if(v1!=-1&&v2!=-1){
+
+        Edge <T,E>*p= NodeTable[v1].adj,*q=NULL,*s=p;
+        while(p&&p ->dest!=v2) {q=p;p =p ->link;}
+        if(p){
+            // 如果p就是边链表的首个结点，就直接删除
+            if(p==s)NodeTable[v1].adj=p ->link;
+            else q ->link=p ->link;
+            delete p;
+
+        }else return false;
+        p=NodeTable[v2].adj;
+        q=NULL;
+        s=p;
+         while(p&&p ->dest!=v1) {q=p;p =p ->link;}
+        if(p){
+            // 如果p就是边链表的首个结点，就直接删除
+            if(p==s)NodeTable[v2].adj=p ->link;
+            else q ->link=p ->link;
+            delete p;
+            numEdges--;
+            return true;
+        }
+         return false;
+
     }
 }
 
 template<class T,class E>
-bool Graphlink<T,E>::removeEdge(int v1,int v2){
-
+istream & operator >>(istream &in,Graphlink<T,E>&G){
+    int i,j,k,n,m;
+    // n为顶点数，m为边数
+    T e1,e2; E weight;
+    cout<<"please enter numvertex and numedge"<<endl;
+    in>>n>>m;
+    for(i=0;i<n;i++){
+        cout<<"please enter "<<i+1<<"vertex"<<endl;
+        in>>e1;
+        G.insertVertex(e1);
+    }
+    i=0;
+    while(i<m)
+    {
+        cout<<"please enter "<<i+1<<" pair of vertex and it weigh"<<endl;
+        in>>e1>>e2>>weight;
+        j=G.getVertexPos(e1);
+        k=G.getVertexPos(e2);
+        if(j==-1||k==-1){
+            cout<<"errer,not exsit vertex that you enter,check it"<<endl;    
+        }else{
+            G.insertEdge(j,k,weight);
+            i++;
+        }
+    }
+   cout<<"success insert vertices and edges"<<endl;
+    return in;
 }
+
+template<class T,class E>
+ostream &operator <<(ostream &out,Graphlink<T,E>&G){
+    int i,j,k,n,m;
+    // n为顶点数，m为边数
+    T e1,e2; E weight;
+    n=G.NumberOfVertices();
+    m=G.NumberofEdge();
+    out<<n<<","<<m<<endl;
+    for(i=0;i<n;i++)
+    {
+        for(j=i+1;j<n;j++)
+        {
+            weight=G.getWeight(i,j);
+            if(weight>0&&weight<maxWeight){
+                e1=G.getValue(i);
+                e2=G.getValue(j);
+                out<<"("<<e1<<","<<e2<<","<<weight<<")"<<endl;
+            }
+        }
+    }
+    return out;
+}
+
+#endif
