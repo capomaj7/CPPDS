@@ -178,7 +178,7 @@ bool Graphlink<T,E>::removeVertex(int v){
     NodeTable[v].data =NodeTable[numVertices].data;
     NodeTable[v].adj=NodeTable[numVertices].adj;
     p=NodeTable[v].adj;
-    cout<<p ->cost<<endl;
+    // cout<<p ->cost<<endl;
     while(p){
         s=NodeTable[p ->dest].adj;
         // 因为这里没删除的操作，所以没有使用前驱指针
@@ -188,7 +188,7 @@ bool Graphlink<T,E>::removeVertex(int v){
         }
         p =p ->link;
     }
-    cout<<"nihao3"<<endl;
+    // cout<<"nihao3"<<endl;
     return true;
 }
 
@@ -211,7 +211,7 @@ bool Graphlink<T,E>::insertEdge(int v1, int v2,E weight){
         q ->dest=v1;
         q ->cost=weight;
         q ->link=NodeTable[v2].adj;
-        NodeTable[v2].adj=p;
+        NodeTable[v2].adj=q; //这里复制的时候没有更改好
         numEdges++;
         return true;
         
@@ -287,6 +287,7 @@ ostream &operator <<(ostream &out,Graphlink<T,E>&G){
     T e1,e2; E weight;
     n=G.NumberOfVertices();
     m=G.NumberofEdge();
+    out<<"vertices and edges num:";
     out<<n<<","<<m<<endl;
     for(i=0;i<n;i++)
     {

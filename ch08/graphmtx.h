@@ -155,6 +155,7 @@ istream & operator >>(istream &in,Graphmtx<T,E>&G){
             i++;
         }
     }
+    cout<<"success insert vertices and edges"<<endl;
     return in;
 }
 
@@ -165,7 +166,7 @@ ostream &operator <<(ostream &out,Graphmtx<T,E>&G){
     T e1,e2; E weight;
     n=G.NumberOfVertices();
     m=G.NumberofEdge();
-    out<<"success insert vertices and edges"<<endl;
+    out<<"vertices and edges num:";
     out<<n<<","<<m<<endl;
     for(i=0;i<n;i++)
     {

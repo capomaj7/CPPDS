@@ -15,5 +15,8 @@ int main(int argc, char const *argv[])
     Graphmtx<char,int> graph(20);
     cin>>graph;
     cout<<graph;
+    // graph.removeEdge(0,1);
+    graph.removeVertex(0);
+    cout<<graph;
     return 0;
 }

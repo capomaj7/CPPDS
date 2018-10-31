@@ -9,6 +9,6 @@ int main(int argc, char const *argv[])
     cout<<graph;
     // graph.removeEdge(0,1);
    bool rem= graph.removeVertex(0);
-    cout<<rem;
+    cout<<graph;
     return 0;
 }
