@@ -1,7 +1,8 @@
-#include<iostream>
-#include<stdlib.h>
 #ifndef _GRAPHLINK_H_
 #define _GRAPHLINK_H_
+#include<iostream>
+#include<stdlib.h>
+#include "../ch03/linkedQueue.h"
 using namespace std;
 const int DefaultVertices=30;
 const int maxWeight=1024;
@@ -40,18 +41,12 @@ class Graphlink{
       int numEdges;
       int numVertices;
       Vertex<T, E> *NodeTable;
-      int getVertexPos(const T Vertex)
-      {
-          for (int i = 0; i < numVertices;i++)
-          {
-              if(NodeTable[i].data==Vertex)return i;
-          }
-          return -1;
-    }
+      
+
     public:
     Graphlink(int sz =DefaultVertices);
     ~Graphlink();
-    T getValue(int i){return (i>=0&&i<numVertices)?NodeTable[i].data:0;}
+    T getValue(int i){return (i>=0&&i<numVertices)?NodeTable[i].data:'0';}
     E getWeight(int v1,int v2);
     int getFirstNeighbor(int v);
     int getNextNeighor(int v,int w);
@@ -61,6 +56,15 @@ class Graphlink{
     bool removeEdge(int v1,int v2);
     int NumberOfVertices(){return numVertices;}
     int NumberofEdge(){return numEdges;}
+    int getVertexPos(const T Vertex)
+      {
+          for (int i = 0; i < numVertices; i++)
+          {
+              if (NodeTable[i].data == Vertex)
+                  return i;
+          }
+          return -1;
+      }
 
 };
 
@@ -93,7 +97,7 @@ int Graphlink<T,E>::getFirstNeighbor(int v)
     if(v!=-1)
     {
         Edge <T,E> *p=NodeTable[v].adj;
-        if(p) return p ->data;
+        if(p) return p ->dest;
     }
     return -1;
 }
@@ -106,6 +110,7 @@ int Graphlink<T,E>::getNextNeighor(int v,int w)
         Edge <T,E> *p=NodeTable[v].adj;
         while(p&&p->dest!=w)
             p=p ->link;
+        // 要考虑到除了w还有w下一个结点
         if(p&&p ->link)
         return p ->link ->dest;
     }
@@ -304,4 +309,61 @@ ostream &operator <<(ostream &out,Graphlink<T,E>&G){
     return out;
 }
 
+// DFS的遍历的子过程，这里原因有递归的存在，访问数组不能放在函数里面
+template<class T,class E>
+void DFSTraverse(Graphlink <T,E> &G,int v,bool visited[]){
+    // 获取顶点访问，并且标记访问为true
+    cout<<G.getValue(v)<<" ";
+    visited[v]=true;
+    int w =G.getFirstNeighbor(v);
+    while(w!=-1){
+        if(visited[w]==false)DFSTraverse(G,w,visited);
+        w=G.getNextNeighor(v,w);
+    }
+    // 也可以使用for循环
+    // for(int w=G.getFirstNeighbor(v);w!=-1;G.getNextNeighor(v,w))
+    //     if(!visited[w])DFS(G,w,visited);
+}
+
+// 深度优先搜索，有回溯和探查
+template<class T,class E>
+void DFS(Graphlink <T,E>&G,const T &v){
+    int i,loc,n=G.NumberOfVertices();
+    bool *visited =new bool[n];
+    for(i=0;i<n;i++) visited[i]=false;
+    loc=G.getVertexPos(v);
+    DFSTraverse(G,loc,visited);
+    delete []visited;
+    cout<<endl;
+}
+
+// 广度搜索，连通图的，类似层遍历
+template<class T,class E>
+void BFS(Graphlink <T,E>&G,const T &v)
+{
+    int i,w,n=G.NumberOfVertices();
+    bool *visited=new bool[n];
+    for(i=0;i<n;i++)visited[i]=false;
+    int loc=G.getVertexPos(v);
+    cout<<G.getValue(loc)<<" ";
+    visited[loc]=true;
+    LinkedQueue<int> Q;
+    Q.EnQueue(loc);
+    while(!Q.IsEmpty()){
+        Q.DeQueue(loc);
+        w=G.getFirstNeighbor(loc);
+        while(w!=-1){
+            if(visited[w]==false)
+            {
+                cout<<G.getValue(w)<<" ";
+                visited[w]=true;
+                Q.EnQueue(w);
+            }
+            // 找关于loc的w的后一个结点
+            w=G.getNextNeighor(loc,w);
+        }
+    }
+    delete []visited;
+    cout<<endl;
+}
 #endif

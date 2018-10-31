@@ -1,3 +1,5 @@
+#ifndef _LINKQUEUE_H_
+#define _LINKQUEUE_H_
 #include<iostream>
 #include"../ch02/linkedList.h"
 using namespace std;
@@ -87,3 +89,4 @@ ostream &operator<<(ostream &os, LinkedQueue<T> &Q)
     }
     return os;
 }
+#endif
