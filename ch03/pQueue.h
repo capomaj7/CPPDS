@@ -37,7 +37,8 @@ bool PQueue<T>::Insert(const T &x){
     pqelements[count++]=x;
     adjust();
 }
-// 这里相当于插入排序
+
+// 这里相当于插入排序,将元素的最后一个元素调整到前面排序好的元素中，类似插入排序
 template<class T>
 void PQueue<T>::adjust(){
     T temp=pqelements[count-1];
