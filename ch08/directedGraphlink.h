@@ -162,68 +162,59 @@ bool DirectedGraphlink<T, E>::removeVertex(int v)
     if (numVertices == 1 || v < 0 || v >= numVertices)
         return false;
     // p是指向要删除表上的结点
-    // s是他关联的结点上的结点
-    // t是他管理结点上的结点的前驱
-    Edge<T, E> *p, *s, *t;
+    Edge<T, E> *p,*s,*q;
     int i, k;
-    // cout<<"nihao"<<endl;
+    // 有向图先删除v链上的边，即出度的边
     while (NodeTable[v].adj)
     {
         p = NodeTable[v].adj;
-        k = p->dest;
-        s = NodeTable[k].adj;
-        // t指针是s指针的前驱
-        t = NULL;
-        // 找出和他相关的连的v结点
-        while (s && s->dest != v)
-        {
-            t = s;
-            s = s->link;
-        }
-        if (s)
-        {
-            // 这里不明白t为什么等于空
-            // 为什么等于空时应为s第一个结点就是v所以不会进入循环了
-            // 所以只要将后移指针就好
-            if (t == NULL)
-                NodeTable[k].adj = s->link;
-            // 删除s结点的的操作，因为之前t指针是s指针的前驱
-            else
-                t->link = s->link;
-            delete s;
-        }
         // 结束了一个结点了，继续下一个结点的循环
         NodeTable[v].adj = p->link;
         delete p;
         numEdges--;
+    }
+    // 删除入读的边
+    for(int i=0;i<numVertices;i++){
+        if(i==v)continue;
+        // 在每一条脸上寻找v的身影
+        p=NodeTable[i].adj,s=p;
+        while(p&&p ->dest!=v){
+            // 思路是iv
+            q=p;
+            p =p ->link;
+        }
+        if(p){
+            if(p==s) NodeTable[i].adj=p ->link;
+            else
+             q ->link=p ->link;
+             delete p;
+             numEdges--;
+        }
     }
     numVertices--;
     // 用最后一个来填补新的一个,注意这里已经在上面做过--自减操作了
     NodeTable[v].data = NodeTable[numVertices].data;
     NodeTable[v].adj = NodeTable[numVertices].adj;
     p = NodeTable[v].adj;
-    // cout<<p ->cost<<endl;
-    while (p)
-    {
-        s = NodeTable[p->dest].adj;
-        // 因为这里没删除的操作，所以没有使用前驱指针
-        while (s)
-        {
-            if (s->dest == (numVertices))
-            {
-                s->dest = v;
-                break;
-            }
-            else
-                s = s->link;
+    // 修改和新边关联的结点的信息
+    for(int i=0;i<numVertices;i++){
+        if(i==v) continue;
+        // 在每一条脸上寻找v的身影
+        s=NodeTable[i].adj;
+        while(s){
+            // 当然也可以吧removeEdge中的一些代码拿过来用
+            if(s ->dest==numVertices){s ->dest=v;break;}
+            else s= s ->link;
         }
-        p = p->link;
     }
-    // cout<<"nihao3"<<endl;
+    // 感觉要将最后一个给释放了
+    // NodeTable[numVertices].adj=NULL;
+    // Vertex <T,E> *t=NodeTable[numVertices];
+    // delete t; 
     return true;
 }
 
-// 这里是无向图的插入
+// 这里是向图的插入
 template <class T, class E>
 bool DirectedGraphlink<T, E>::insertEdge(int v1, int v2, E weight)
 {
@@ -233,18 +224,13 @@ bool DirectedGraphlink<T, E>::insertEdge(int v1, int v2, E weight)
         while (p && p->dest != v2)
             p = p->link;
         // 因为要插入，看看是不是已存在这个边，如果存在，就不插入了
-        if (p)
-            return false;
+        if (p)return false;
+        // p不存在的时候创建存储v2结点信息，使用前插法
         p = new Edge<T, E>;
-        q = new Edge<T, E>;
         p->dest = v2;
         p->cost = weight;
         p->link = NodeTable[v1].adj;
         NodeTable[v1].adj = p;
-        q->dest = v1;
-        q->cost = weight;
-        q->link = NodeTable[v2].adj;
-        NodeTable[v2].adj = q; //这里复制的时候没有更改好
         numEdges++;
         return true;
     }
@@ -257,7 +243,7 @@ bool DirectedGraphlink<T, E>::removeEdge(int v1, int v2)
 {
     if (v1 != -1 && v2 != -1)
     {
-
+        // q是p的前驱
         Edge<T, E> *p = NodeTable[v1].adj, *q = NULL, *s = p;
         while (p && p->dest != v2)
         {
@@ -272,30 +258,14 @@ bool DirectedGraphlink<T, E>::removeEdge(int v1, int v2)
             else
                 q->link = p->link;
             delete p;
-        }
-        else
-            return false;
-        p = NodeTable[v2].adj;
-        q = NULL;
-        s = p;
-        while (p && p->dest != v1)
-        {
-            q = p;
-            p = p->link;
-        }
-        if (p)
-        {
-            // 如果p就是边链表的首个结点，就直接删除
-            if (p == s)
-                NodeTable[v2].adj = p->link;
-            else
-                q->link = p->link;
-            delete p;
             numEdges--;
             return true;
         }
-        return false;
+        
     }
+        //下面一行的含义是如果连接表一开始就是空就没有元素删除
+        //还有就是之后遍历一遍链表没找到也是p为空    
+        return false;
 }
 
 template <class T, class E>
@@ -347,7 +317,7 @@ ostream &operator<<(ostream &out, DirectedGraphlink<T, E> &G)
     out << n << "," << m << endl;
     for (i = 0; i < n; i++)
     {
-        for (j = i + 1; j < n; j++)
+        for (j = 0; j < n; j++)
         {
             weight = G.getWeight(i, j);
             if (weight > 0 && weight < maxWeight)

@@ -1,4 +1,5 @@
 #include<iostream>
+#include<stdlib.h>
 using namespace std;
 const int DefaultVertices=30;
 const int maxWeight=1024;

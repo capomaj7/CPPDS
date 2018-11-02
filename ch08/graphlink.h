@@ -250,9 +250,11 @@ bool Graphlink<T,E>::removeEdge(int v1,int v2){
             numEdges--;
             return true;
         }
-         return false;
 
     }
+    // 可以少些1到2个return false
+    // 可以为v1v2不存在的时候
+         return false;
 }
 
 template<class T,class E>
