@@ -296,6 +296,7 @@ ostream &operator <<(ostream &out,Graphlink<T,E>&G){
     out<<n<<","<<m<<endl;
     for(i=0;i<n;i++)
     {
+        //测试的话可以将j=0修改，这样会出现类似ab25，ba25的结果 
         for(j=i+1;j<n;j++)
         {
             weight=G.getWeight(i,j);

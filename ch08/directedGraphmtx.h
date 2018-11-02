@@ -1,14 +1,15 @@
 #include<iostream>
+#include <stdlib.h>
 using namespace std;
 const int DefaultVertices=30;
 const int maxWeight=1024;
 template<class T,class E>
-class Graphmtx{
+class DirectedGraphmtx{
     // 重载友元函数
     template<class M,class N>
-    friend istream &operator >>(istream &in,Graphmtx<M,N> &G);
+    friend istream &operator >>(istream &in,DirectedGraphmtx<M,N> &G);
     template<class M,class N>
-    friend ostream &operator <<(ostream &out,Graphmtx<M,N> &G);
+    friend ostream &operator <<(ostream &out,DirectedGraphmtx<M,N> &G);
     private:
         // 用于存储顶点的一维数组
         T *VerticesList;
@@ -24,11 +25,11 @@ class Graphmtx{
             return -1;
         }
     public:
-    Graphmtx(int sz=DefaultVertices);
-    ~Graphmtx(){delete []VerticesList;delete[]Edge;}
+    DirectedGraphmtx(int sz=DefaultVertices);
+    ~DirectedGraphmtx(){delete []VerticesList;delete[]Edge;}
     // 去i顶点的值
     T getValue(int i){
-        return (i>=0&&i<numVertices)?VerticesList[i]:'e';
+        return (i>=0&&i<numVertices)?VerticesList[i]:'0';
     }
     E getWeight(int v1,int v2){
         return (v1!=-1&&v2!=-1)?Edge[v1][v2]:0;
@@ -45,7 +46,7 @@ class Graphmtx{
 };
 
 template<class T,class E>
-Graphmtx<T,E>::Graphmtx(int sz){
+DirectedGraphmtx<T,E>::DirectedGraphmtx(int sz){
     maxVertices=sz;numEdges=0;numVertices=0;
     int i,j;
     VerticesList=new T[maxVertices];
@@ -60,7 +61,7 @@ Graphmtx<T,E>::Graphmtx(int sz){
 
 // 输入时要找的结点的索引，输出的是用矩阵存储的第一个连接顶点的索引
 template<class T,class E>
-int Graphmtx<T,E>::getFirstNeighbor(int v){
+int DirectedGraphmtx<T,E>::getFirstNeighbor(int v){
     if(v!=-1){
         for(int col=0;col<numVertices;col++)
             if(Edge[v][col]>0&&Edge[v][col]<maxWeight)return col;
@@ -68,8 +69,9 @@ int Graphmtx<T,E>::getFirstNeighbor(int v){
     return -1;
 }
 
+// v是点，w是v相连接的点，函数要找的是w之后的v的连接点
 template<class T,class E>
-int Graphmtx<T,E>::getNextNeighor(int v,int w)
+int DirectedGraphmtx<T,E>::getNextNeighor(int v,int w)
 {
     if(v!=-1&&w!=-1){
         for(int col=w+1;col<numVertices;col++)
@@ -79,7 +81,7 @@ int Graphmtx<T,E>::getNextNeighor(int v,int w)
 }
 
 template<class T,class E>
-bool Graphmtx<T,E>::insertVertex(const T &vertex){
+bool DirectedGraphmtx<T,E>::insertVertex(const T &vertex){
     if(numVertices==maxVertices)return false;
     VerticesList[numVertices++]=vertex;
     return true;
@@ -88,41 +90,48 @@ bool Graphmtx<T,E>::insertVertex(const T &vertex){
 
 // 解释参见353
 template<class T,class E>
-bool Graphmtx<T,E>::removeVertex(int v){
+bool DirectedGraphmtx<T,E>::removeVertex(int v){
     if(v<0||v>=numVertices)return false;
     // 图的结构可以没有边，但是要有点
     if(numVertices==1)return false;
     int i,j;
     // 将最后的一个结点转移到要删除的结点上
     VerticesList[v]=VerticesList[numVertices-1];
+    // 
     for(i=0;i<numVertices;i++)
-        if(Edge[i][v]>0&&Edge[i][v]<maxWeight)numEdges--;
+        // 第一个是v点的度，第二个是v点的出度
+        if((Edge[i][v]>0&&Edge[i][v]<maxWeight)||(Edge[v][i]>0&&Edge[v][i]<maxWeight))numEdges--;
+    // 用最后一列填补第v列
     for(i=0;i<numVertices;i++)
         Edge[i][v]=Edge[i][numVertices-1];
     numVertices--;
+    // 用最后一行填补第v行
     for(j=0;j<numVertices;j++)
     Edge[v][j]=Edge[numVertices][j];
     return true;
 }
 
-// 无向图的插入
+// 有向图的插入.插入v1到v2
 template<class T,class E>
-bool Graphmtx<T,E>::insertEdge(int v1,int v2,E cost){
+bool DirectedGraphmtx<T,E>::insertEdge(int v1,int v2,E cost){
     // 这里的if的最后的条件让无向图出现重复后权重还是原来的
     if(v1>-1&&v1<numVertices&&v2>-1&&v2<numVertices&&Edge[v1][v2]==maxWeight){
-        Edge[v1][v2]=Edge[v2][v1]=cost;
+        // 需要更加细致，别吧=弄成==
+        Edge[v1][v2]=cost;
+        // cout<<Edge[v1][v2]<<endl;
         numEdges++;
         return true;
     }
     else return false;
 }
 
+// 有向图的删除，从v1到v2
 template<class T,class E>
-bool Graphmtx<T,E>::removeEdge(int v1,int v2)
+bool DirectedGraphmtx<T,E>::removeEdge(int v1,int v2)
 {
     if(v1>-1&&v1<numVertices&&v2>-1&&v2<numVertices&&Edge[v1][v2]>0
     &&Edge[v1][v2]<maxWeight){
-        Edge[v1][v2]=Edge[v2][v1]=maxWeight;
+        Edge[v1][v2]=maxWeight;
         numEdges--;
         return true;
     }
@@ -131,7 +140,7 @@ bool Graphmtx<T,E>::removeEdge(int v1,int v2)
 }
 
 template<class T,class E>
-istream & operator >>(istream &in,Graphmtx<T,E>&G){
+istream & operator >>(istream &in,DirectedGraphmtx<T,E>&G){
     int i,j,k,n,m;
     // n为顶点数，m为边数
     T e1,e2; E weight;
@@ -161,7 +170,7 @@ istream & operator >>(istream &in,Graphmtx<T,E>&G){
 }
 
 template<class T,class E>
-ostream &operator <<(ostream &out,Graphmtx<T,E>&G){
+ostream &operator <<(ostream &out,DirectedGraphmtx<T,E>&G){
     int i,j,k,n,m;
     // n为顶点数，m为边数
     T e1,e2; E weight;
@@ -171,7 +180,7 @@ ostream &operator <<(ostream &out,Graphmtx<T,E>&G){
     out<<n<<","<<m<<endl;
     for(i=0;i<n;i++)
     {
-        for(j=i+1;j<n;j++)
+        for(j=0;j<n;j++)
         {
             weight=G.getWeight(i,j);
             if(weight>0&&weight<maxWeight){
@@ -185,7 +194,7 @@ ostream &operator <<(ostream &out,Graphmtx<T,E>&G){
 }
 
 template<class T,class E>
-void Graphmtx<T,E>::printGraphmtx(){
+void DirectedGraphmtx<T,E>::printGraphmtx(){
     if(numEdges==0) {cerr<<"error"<<endl;exit(1);}
     for(int i=0;i<numVertices;i++)
         cout<<VerticesList[i]<<"\t";
@@ -195,4 +204,5 @@ void Graphmtx<T,E>::printGraphmtx(){
             cout<<Edge[i][j]<<"\t";
         cout<<endl;
     }
+        
 }
