@@ -14,6 +14,7 @@ struct Edge
     int dest;
     // 权重
     E cost;
+    // 下一条边链指针
     Edge<T, E> *link;
     Edge() {}
     Edge(int num, E weigh) : dest(num), cost(weigh), link(NULL) {}
@@ -32,42 +33,55 @@ struct Vertex
     Edge<T, E> *adj;
 };
 
-template <class T, class E>
-class DirectedGraphlink
-{
-    template <class M, class N>
-    friend istream &operator>>(istream &in, DirectedGraphlink<M, N> &G);
-    template <class M, class N>
-    friend ostream &operator<<(ostream &out, DirectedGraphlink<M, N> &G);
-
-  private:
-    int maxVertices;
-    int numEdges;
-    int numVertices;
-    Vertex<T, E> *NodeTable;
-
-  public:
-    DirectedGraphlink(int sz = DefaultVertices);
+template<class T,class E>
+class DirectedGraphlink{
+    template<class M,class N>
+    friend istream & operator >>(istream &in,DirectedGraphlink<M,N>&G);
+    template<class M,class N>
+    friend ostream & operator <<(ostream &out,DirectedGraphlink<M,N>&G);
+    private:
+    // 最大的顶点数
+      int maxVertices;
+    //   边的个数
+      int numEdges;
+    //   顶点的个数
+      int numVertices;
+    //   顶点表（各边链表的头节点）
+      Vertex<T, E> *NodeTable;
+    public:
+    DirectedGraphlink(int sz =DefaultVertices);
     ~DirectedGraphlink();
-    T getValue(int i) { return (i >= 0 && i < numVertices) ? NodeTable[i].data : '0'; }
-    E getWeight(int v1, int v2);
+    //取位置为i的顶点中的值
+    T getValue(int i){return (i>=0&&i<numVertices)?NodeTable[i].data:'0';}
+    //返回边v1，v2上的权值
+    E getWeight(int v1,int v2);
+    //取顶点v的第一个邻接顶点
     int getFirstNeighbor(int v);
-    int getNextNeighor(int v, int w);
+    //取v的邻接顶点w的下一邻接顶点
+    int getNextNeighor(int v,int w);
+    // 插入顶点v
     bool insertVertex(const T &v);
-    bool insertEdge(int v1, int v2, E cost);
+    // 插入边（v1,v2)，权值为cost
+    bool insertEdge(int v1,int v2,E cost);
+    // 移除点
     bool removeVertex(int x);
-    bool removeEdge(int v1, int v2);
-    int NumberOfVertices() { return numVertices; }
-    int NumberofEdge() { return numEdges; }
+    // 移除边
+    bool removeEdge(int v1,int v2);
+    // 返回顶点数
+    int NumberOfVertices(){return numVertices;}
+    // 返回边的数量
+    int NumberofEdge(){return numEdges;}
+    // 返回顶点所在的索引
     int getVertexPos(const T Vertex)
-    {
-        for (int i = 0; i < numVertices; i++)
-        {
-            if (NodeTable[i].data == Vertex)
-                return i;
-        }
-        return -1;
-    }
+      {
+          for (int i = 0; i < numVertices; i++)
+          {
+              if (NodeTable[i].data == Vertex)
+                  return i;
+          }
+          return -1;
+      }
+
 };
 
 template <class T, class E>
@@ -396,4 +410,42 @@ void BFS(DirectedGraphlink<T, E> &G, const T &v)
     delete[] visited;
     cout << endl;
 }
+
+// 拓扑排序()
+/* template<class T,class E>
+void TopologicalSort(DirectedGraphlink <T,E> &G)
+{
+    int i,j,w,v;
+    int top=-1;
+    int n=G.NumberOfVertices();
+    int *count=new int[n];
+    for(i=0;i<n;i++)count[i]=0;
+    cin>>i>>j;
+    while(i>-1&&i<n&&j>-1&&j<n){
+        G.insertEdge(i,j);
+        count[j]++;
+        cin>>i>>j;
+    }
+    for(i=0;i<n;i++)
+        if(count[i]==0){count[i]=top;top=i;}
+    for(i=0;i<n;i++)
+        if(top==-1){
+            count<<"no circle"<<endl;
+            return ;
+        }else{
+            v=top;
+            top=count[top];
+            count<<G.getValue(v)<<" "<<endl;
+            w=G.getFirstNeighbor(v);
+            while(w!=-1){
+                if(--count[w]==0)
+                {
+                    cout[w]=top;
+                    top=w;
+
+                }
+                w=G.getNextNeighor(v,w);
+            }
+        }
+} */
 #endif

@@ -10,6 +10,7 @@ int main(int argc, char const *argv[])
     // (a,c,46)
     // (b,c,15)
     // (b,e,67)
+    // (d,e,31)
     // (c,d,53)
     // (d,e,31)
     DirectedGraphlink<char,int> graph(20);
@@ -29,6 +30,7 @@ int main(int argc, char const *argv[])
     graph.insertEdge(3,2,65);
     cout<<graph;
     // graph.removeEdge(0,1);
+    cout<<"删除c点";
     graph.removeVertex(2);
     cout<<graph;
     // cin>>graph;

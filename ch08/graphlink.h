@@ -13,6 +13,7 @@ struct Edge{
     int dest;
     // 权重
     E cost;
+    // 下一条边链指针
     Edge <T,E> *link;
     Edge(){}
     Edge(int num,E weigh):dest(num),cost(weigh),link(NULL){}
@@ -37,25 +38,38 @@ class Graphlink{
     template<class M,class N>
     friend ostream & operator <<(ostream &out,Graphlink<M,N>&G);
     private:
+    // 最大的顶点数
       int maxVertices;
+    //   边的个数
       int numEdges;
+    //   顶点的个数
       int numVertices;
+    //   顶点表（各边链表的头节点）
       Vertex<T, E> *NodeTable;
-      
-
     public:
     Graphlink(int sz =DefaultVertices);
     ~Graphlink();
+    //取位置为i的顶点中的值
     T getValue(int i){return (i>=0&&i<numVertices)?NodeTable[i].data:'0';}
+    //返回边v1，v2上的权值
     E getWeight(int v1,int v2);
+    //取顶点v的第一个邻接顶点
     int getFirstNeighbor(int v);
+    //取v的邻接顶点w的下一邻接顶点
     int getNextNeighor(int v,int w);
+    // 插入顶点v
     bool insertVertex(const T &v);
+    // 插入边（v1,v2)，权值为cost
     bool insertEdge(int v1,int v2,E cost);
+    // 移除点
     bool removeVertex(int x);
+    // 移除边
     bool removeEdge(int v1,int v2);
+    // 返回顶点数
     int NumberOfVertices(){return numVertices;}
+    // 返回边的数量
     int NumberofEdge(){return numEdges;}
+    // 返回顶点所在的索引
     int getVertexPos(const T Vertex)
       {
           for (int i = 0; i < numVertices; i++)
@@ -137,7 +151,8 @@ template<class T,class E>
 bool Graphlink<T,E>::insertVertex(const T& vertex){
     if(numVertices==maxVertices)return false;
     NodeTable[numVertices].data=vertex;
-    numVertices++; return true;
+    numVertices++; 
+    return true;
 }
 // 消除行就行了吧，但是为什么要有那么多其他的操作
 // 因为除了把点消除了之外还要把和他有关系的边消除了
