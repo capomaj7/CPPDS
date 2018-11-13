@@ -15,7 +15,7 @@ struct node
     node* next;  
 }adj[MAX];  
   
-// int Create(node adj[],int n,int m)//ÁÚ½Ó±í½¨±íº¯Êı£¬n´ú±í¶¨µãÊı£¬m´ú±í±ßÊı  
+// int Create(node adj[],int n,int m)//é‚»æ¥è¡¨å»ºè¡¨å‡½æ•°ï¼Œnä»£è¡¨å®šç‚¹æ•°ï¼Œmä»£è¡¨è¾¹æ•°  
 // {  
 //     int i;  
 //     node *p;  
@@ -27,7 +27,7 @@ struct node
 //     }  
 //     for(i=1;i<=m;i++)  
 //     {  
-//         cout<<"ÇëÊäÈëµÚ"<<i<<"Ìõ±ß:";  
+//         cout<<"è¯·è¾“å…¥ç¬¬"<<i<<"æ¡è¾¹:";  
 //         int u,v;  
 //         cin>>u>>v;  
 //         p=new node;  
@@ -38,7 +38,7 @@ struct node
 //     return 1;  
 // }
 
-int Create(node adj[],int n)//ÁÚ½Ó±í½¨±íº¯Êı£¬n´ú±í¶¨µãÊı£¬m´ú±í±ßÊı  
+int Create(node adj[],int n)//é‚»æ¥è¡¨å»ºè¡¨å‡½æ•°ï¼Œnä»£è¡¨å®šç‚¹æ•°ï¼Œmä»£è¡¨è¾¹æ•°  
 {  
     int i;  
     node *p;  
@@ -50,7 +50,7 @@ int Create(node adj[],int n)//ÁÚ½Ó±í½¨±íº¯Êı£¬n´ú±í¶¨µãÊı£¬m´ú±í±ßÊı
     }  
     // for(i=1;i<=m;i++)  
     // {  
-    //     cout<<"ÇëÊäÈëµÚ"<<i<<"Ìõ±ß:";  
+    //     cout<<"è¯·è¾“å…¥ç¬¬"<<i<<"æ¡è¾¹:";  
     //     int u,v;  
     //     cin>>u>>v;  
     //     p=new node;  
@@ -61,7 +61,7 @@ int Create(node adj[],int n)//ÁÚ½Ó±í½¨±íº¯Êı£¬n´ú±í¶¨µãÊı£¬m´ú±í±ßÊı
     return 1;  
 }  
 
-// ²åÈë±ß£¬ÕâÀï²»ÏëÂé·³Ò»´Î´ÎÊÖ¶¯ÊäÈëËùÒÔ¶¨ÒåÒ»¸öº¯Êı
+// æ’å…¥è¾¹ï¼Œè¿™é‡Œä¸æƒ³éº»çƒ¦ä¸€æ¬¡æ¬¡æ‰‹åŠ¨è¾“å…¥æ‰€ä»¥å®šä¹‰ä¸€ä¸ªå‡½æ•°
 void insertEdge(node adj[],int u,int v){
     node *p; 
     p=new node;  
@@ -70,7 +70,7 @@ void insertEdge(node adj[],int u,int v){
     adj[u].next=p;  
 } 
   
-void print(int n)//ÁÚ½Ó±í´òÓ¡º¯Êı  
+void print(int n)//é‚»æ¥è¡¨æ‰“å°å‡½æ•°  
 {  
     int i;  
     node *p;  
@@ -91,10 +91,10 @@ int topsort(node adj[],int n)
     int i;  
     int term=0;
     node *p;  
-    // ³õÊ¼»¯,½«Êı×éindegreeeÔªËØÈ«²¿³õÊ¼»¯Îª0£¬
-    //½«sÖĞµ±Ç°Î»ÖÃºóÃæµÄn¸ö×Ö½Ú £¨typedef unsigned int size_t £©ÓÃ ch Ìæ»»²¢·µ»Ø s 
+    // åˆå§‹åŒ–,å°†æ•°ç»„indegreeeå…ƒç´ å…¨éƒ¨åˆå§‹åŒ–ä¸º0ï¼Œ
+    //å°†sä¸­å½“å‰ä½ç½®åé¢çš„nä¸ªå­—èŠ‚ ï¼ˆtypedef unsigned int size_t ï¼‰ç”¨ ch æ›¿æ¢å¹¶è¿”å› s 
     memset(indegree,0,sizeof(indegree));  
-    // Í³¼Æ±íÖĞµÄÈë¶ÈÇé¿ö
+    // ç»Ÿè®¡è¡¨ä¸­çš„å…¥åº¦æƒ…å†µ
     for(i=1;i<=n;i++)  
     {  
   
@@ -105,7 +105,7 @@ int topsort(node adj[],int n)
             p=p->next;  
         }  
     }  
-    // ½«¶ÈÎª0µÄ·ÅÈëÕ»ÖĞ£¬Õ»ÖĞ´æ·ÅµÄÊÇË÷Òı
+    // å°†åº¦ä¸º0çš„æ”¾å…¥æ ˆä¸­ï¼Œæ ˆä¸­å­˜æ”¾çš„æ˜¯ç´¢å¼•
     for(i=1;i<=n;i++)  
     {  
         if(indegree[i]==0) {
@@ -143,7 +143,7 @@ int topsort(node adj[],int n)
     }  
     cout<<endl;  
     
-    if(count<n){cout<<"ÓĞ»ØÂ·"<<endl; return -1;}  
+    if(count<n){cout<<"æœ‰å›è·¯"<<endl; return -1;}  
     return term;
 }  
   
@@ -151,10 +151,10 @@ int main()
 {  
     int n;  
     int m;  
-   // cout<<"ÇëÊäÈë¶¥µãÊı¼°±ßÊı:";  
+   // cout<<"è¯·è¾“å…¥é¡¶ç‚¹æ•°åŠè¾¹æ•°:";  
     //cin>>n>>m;  
     //Create(adj,n,m);  
-    //cout<<"ÊäÈëµÄÁÚ½Ó±íÎª:"<<endl;  
+    //cout<<"è¾“å…¥çš„é‚»æ¥è¡¨ä¸º:"<<endl;  
     Create(adj,12);
     insertEdge(adj,1,2);
     insertEdge(adj,1,3);
@@ -173,9 +173,9 @@ int main()
     insertEdge(adj,9,12);
     insertEdge(adj,10,12);
     print(12);  
-    // cout<<"ÍØÆËÅÅĞò½á¹ûÎª:"<<endl;  
+    // cout<<"æ‹“æ‰‘æ’åºç»“æœä¸º:"<<endl;  
     int termvalue=topsort(adj,12);  
-    cout<<"ÖÁÉÙĞèÒª"<<termvalue<<"¸öÑ§ÆÚ"<<endl;
+    cout<<"è‡³å°‘éœ€è¦"<<termvalue<<"ä¸ªå­¦æœŸ"<<endl;
     system("pause");  
     return 0;  
 }
