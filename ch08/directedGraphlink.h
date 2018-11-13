@@ -412,7 +412,7 @@ void BFS(DirectedGraphlink<T, E> &G, const T &v)
 }
 
 // 拓扑排序()
-/* template<class T,class E>
+template<class T,class E>
 void TopologicalSort(DirectedGraphlink <T,E> &G)
 {
     int i,j,w,v;
@@ -431,7 +431,7 @@ void TopologicalSort(DirectedGraphlink <T,E> &G)
     for(i=0;i<n;i++)
         if(top==-1){
             count<<"no circle"<<endl;
-            return ;
+            exit(1);
         }else{
             v=top;
             top=count[top];
@@ -447,5 +447,5 @@ void TopologicalSort(DirectedGraphlink <T,E> &G)
                 w=G.getNextNeighor(v,w);
             }
         }
-} */
+} 
 #endif
