@@ -29,9 +29,11 @@ int main(int argc, char const *argv[])
     // graph.removeEdge(0,1);
     // bool rem= graph.removeVertex(0);
     // cout<<graph;
-    // cout<<"DFS result is:"<<endl;
-    // DFS(graph,v);
+    cout<<"DFS result is:"<<endl;
+    // 从a点开始
+    DFS(graph,'a');
 
-    // cout << "BFS result is:";
+    cout << "BFS result is:";
+    BFS(graph,'a');
     return 0;
 }

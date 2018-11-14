@@ -411,7 +411,8 @@ void BFS(DirectedGraphlink<T, E> &G, const T &v)
     cout << endl;
 }
 
-// 拓扑排序()
+// 拓扑排序(),书上的思想是将count做为一个栈的，这里需要改相应的输入，变成只有边没有权重的情况
+//后续要将这里给改变
 template<class T,class E>
 void TopologicalSort(DirectedGraphlink <T,E> &G)
 {
@@ -430,17 +431,17 @@ void TopologicalSort(DirectedGraphlink <T,E> &G)
         if(count[i]==0){count[i]=top;top=i;}
     for(i=0;i<n;i++)
         if(top==-1){
-            count<<"no circle"<<endl;
+            cout<<"no circle"<<endl;
             exit(1);
         }else{
             v=top;
             top=count[top];
-            count<<G.getValue(v)<<" "<<endl;
+            cout<<G.getValue(v)<<" "<<endl;
             w=G.getFirstNeighbor(v);
             while(w!=-1){
                 if(--count[w]==0)
                 {
-                    cout[w]=top;
+                    count[w]=top;
                     top=w;
 
                 }

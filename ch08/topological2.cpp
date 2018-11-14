@@ -1,6 +1,3 @@
-#include<cmath>  
-#include<cstdio>  
-#include<algorithm>  
 #include<queue>
 #include<string.h>   
 #include<iostream>

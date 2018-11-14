@@ -20,6 +20,16 @@ int main(int argc, char const *argv[])
     graph.insertVertex('d');
     graph.insertVertex('e');
     graph.insertVertex('f');
+    graph.insertVertex('g');
+    graph.insertEdge(0,1,28);
+    graph.insertEdge(0,5,10);
+    graph.insertEdge(1,6,14);
+    graph.insertEdge(1,2,16);
+    graph.insertEdge(2,3,12);
+    graph.insertEdge(3,6,18);
+    graph.insertEdge(3,4,22);
+    graph.insertEdge(4,6,24);
+    graph.insertEdge(4,5,25);
     // graph.insertEdge(0,1,24);
     // graph.insertEdge(0,3,46);
     // graph.insertEdge(1,5,55);
@@ -45,5 +55,11 @@ int main(int argc, char const *argv[])
     // graph.removeEdge(0,1);
     // graph.removeVertex(0);
     // cout<<graph;
+    cout<<"DFS result is:"<<endl;
+    // 从a点开始
+    DFS(graph,'a');
+
+    cout << "BFS result is:";
+    BFS(graph,'a');
     return 0;
 }
