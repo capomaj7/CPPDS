@@ -2,7 +2,7 @@
 #include <stdlib.h>
 using namespace std;
 const int DefaultVertices=30;
-const int maxWeight=1024;
+const int maxWeight=10240;
 template<class T,class E>
 class DirectedGraphmtx{
     // 重载友元函数
@@ -205,4 +205,44 @@ void DirectedGraphmtx<T,E>::printGraphmtx(){
         cout<<endl;
     }
         
+}
+
+/* 迪杰斯特拉是求解非负权值的单结点最短路径
+ 第一个参数是图，第二个参数是起始的顶点，
+ 第三参数存放的是起始边到各个点的最小路径长度，
+ 第四个参数是存放求到的最短路径 */
+template<class T,class E>
+void ShortestPathDijkstra(DirectedGraphmtx <T,E> &G,T v,E dist[],int path[]){
+    int n=G.NumberOfVertices();
+    bool *s=new bool[n];
+    int i,j,k;
+    E w,min;
+    for(i=0;i<n;i++){
+        dist[i]=G.getWeight(v,i);
+        s[i]=false;
+        if(i!=v&&dist[i]<maxWeight)
+         path[i]=v;
+        else
+        path[i]=-1;
+    }
+    s[v]=true;
+    dist[v]=0;
+    for(i=0;i<n-1;i++){
+        min=maxWeight;
+        int u=v;
+        for(j=0;j<n;j++)
+            if(s[j]==false&&dist[j]<min){
+                u=j;
+                min=dist[j];
+            }
+            s[u]=true;
+            for(k=0;k<n;k++){
+                w=G.getWeight(u,k);
+                if(s[k]==false&&w<maxWeight&&dist[u]+w<dist[k]){
+                    dist[k]=dist[u]+w;
+                    path[k]=u;
+                }
+            }
+    }
+
 }
