@@ -208,11 +208,11 @@ void DirectedGraphmtx<T,E>::printGraphmtx(){
 }
 
 /* 迪杰斯特拉是求解非负权值的单结点最短路径
- 第一个参数是图，第二个参数是起始的顶点，
+ 第一个参数是图，第二个参数是起始的顶点的索引，
  第三参数存放的是起始边到各个点的最小路径长度，
  第四个参数是存放求到的最短路径 */
 template<class T,class E>
-void ShortestPathDijkstra(DirectedGraphmtx <T,E> &G,T v,E dist[],int path[]){
+void ShortestPathDijkstra(DirectedGraphmtx <T,E> &G,int v,E dist[],int path[]){
     int n=G.NumberOfVertices();
     bool *s=new bool[n];
     int i,j,k;
@@ -245,4 +245,73 @@ void ShortestPathDijkstra(DirectedGraphmtx <T,E> &G,T v,E dist[],int path[]){
             }
     }
 
+}
+
+// 输出最短路径和最短距离
+template<class T,class E>
+void printShortestPathDijkstra(DirectedGraphmtx <T,E>&G,int v,E dist[],int path[]){
+    cout<<"start point "<<G.getValue(v)<<" to other point as follow"<<endl;
+    int i,j,k,n=G.NumberOfVertices();
+    for(i=0;i<n;i++){
+        if(i!=v){
+            // 这里不用i的原因是之后需要输出i的路径
+            j=i;
+            k=0;
+            while(j!=v){
+                cout<<G.getValue(j)<<"<---";
+                j=path[j];
+            }
+            cout<<G.getValue(j)<<"\t";
+            cout<<"shortest path lenth "<<dist[i]<<endl;
+        }
+    }
+}
+
+/* 弗洛伊德每一对的求最短路径和长度
+    第一个参数是图
+    第二个参数是指每次加入中间结果的顶点i到j的最短路径长度
+    第三个参数是i到j的路径最后结果的上一个结点，知道之后继续找i到其结果，知道结果==i
+ */
+template<class T,class E>
+void Floyd(DirectedGraphmtx <T,E>&G,E a[4][4],int path[4][4]){
+    int i,j,k,n=G.NumberOfVertices();
+    for(i=0;i<n;i++){
+        for(j=0;j<n;j++){
+            a[i][j]=G.getWeight(i,j);
+            // 初始化时能到达的记录标记初始点，不能到达或自己本身的记录为0
+            if(i!=j&&a[i][j]<maxWeight)path[i][j]=i;
+            else path[i][j]=0;
+        }
+    }
+    // 针对每个k产生相应的a(k)和path(k),即每次加入新的点作为中间点
+    for(k=0;k<n;k++){
+        for(i=0;i<n;i++){
+            for(j=0;j<n;j++){
+                if(a[i][k]+a[k][j]<a[i][j]){
+                    a[i][j]=a[i][k]+a[k][j];
+                    path[i][j]=path[k][j];//更新相应的路径结点
+                }
+            }
+        }
+        cout<<"the k of result is "<<k+1<<endl;
+        // 打印每次的a矩阵
+        for (i = 0; i < n; i++)
+        {
+            for (j = 0; j < n; j++)
+            {
+                cout<<a[i][j]<<"\t";
+            }
+            cout<<endl;
+        }
+        cout<<"path -------------------"<<endl;
+        // 打印每次的a矩阵
+        for (i = 0; i < n; i++)
+        {
+            for (j = 0; j < n; j++)
+            {
+                cout<<path[i][j]<<"\t";
+            }
+            cout<<endl;
+        }
+    }
 }
