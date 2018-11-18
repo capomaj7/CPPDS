@@ -21,7 +21,7 @@ UFSets::UFSets(int sz){
     parent[i]=-1;
 }
 
-UFSets::Find(int x){
+int UFSets::Find(int x){
     while(parent[x]>=0)x=parent[x];
     return x;
 }

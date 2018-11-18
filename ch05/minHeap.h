@@ -4,7 +4,8 @@
 #include<stdlib.h>
 using namespace std;
 const int  DefaultSize=10;
-// 这里用的是一维数组（按照完全二叉树来存储最小堆
+// 这里用的是一维数组（按照完全二叉树来存储最小堆）
+/* 最小堆性质是最上面是序列中最小的，子堆是小于左右孩子的，除去堆顶元素可以再次调整 */
 template<class T>
 class MinHeap{
     private:

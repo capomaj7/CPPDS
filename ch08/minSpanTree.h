@@ -14,5 +14,10 @@ template<class T,class E>
 class MinSpanTree{
     protected:
     MSTEdgeNode<T,E> *edgevalue;
-    fda.fa
-}
+    int maxSize,currentsize;
+    public:
+    MinSpanTree(int sz=maxValue-1):maxSize(sz):currentsize(0)
+    {
+        edgevalue=new MSTEdgeNode<T,E>[sz];
+    }
+};
